@@ -20,6 +20,13 @@ node {
                 bat "echo 'shell scripts to run integration tests...'"
             }
         }
+        stage('UI E2E Tests [Dev]') {
+                    when {
+                        anyOf {
+                            branch 'develop'
+                            branch 'master'
+                        }
+                    }
         stage ('Deploy') {
             bat "echo 'shell scripts to deploy to server...'"
         }
