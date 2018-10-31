@@ -1,22 +1,30 @@
-pipeline {
-  agent none
-  stages {
-    stage('DEV') {
-      parallel {
-        stage('DEV') {
-          steps {
-            echo 'This is my first DEV test'
-          }
+node {
+    // Clean workspace before doing anything
+    deleteDir()
+
+    try {
+        stage ('Clone') {
+            checkout scm
         }
-        stage('Test-DEV') {
-          steps {
-            echo 'This is devtest'
-          }
+        stage ('Build') {
+            bat "echo 'shell scripts to build project...'"
         }
-      }
+        stage ('Tests') {
+            parallel 'static': {
+                bat "echo 'shell scripts to run static tests...'"
+            },
+            'unit': {
+                bat "echo 'shell scripts to run unit tests...'"
+            },
+            'integration': {
+                bat "echo 'shell scripts to run integration tests...'"
+            }
+        }
+        stage ('Deploy') {
+            bat "echo 'shell scripts to deploy to server...'"
+        }
+    } catch (err) {
+        currentBuild.result = 'FAILED'
+        throw err
     }
-  }
-  environment {
-    DEV = 'dev'
-  }
 }
